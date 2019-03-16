@@ -1,0 +1,11 @@
+[package]
+name = "screenshots-maker"
+version = "1.0.0"
+authors = ["Vuraddo <vuraddo@yahoo.com>"]
+edition = "2018"
+
+[dependencies]
+repng = "0.2.2"
+scrap = "0.5.0"
+clap = "2.32.0"
+chrono = "0.4.6"
