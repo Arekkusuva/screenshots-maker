@@ -24,17 +24,26 @@ fn main() {
             .short("i")
             .long("interval")
             .help("Sets interval")
-            .takes_value(true))
+            .takes_value(true)
+            .default_value("540"))
+        .arg(Arg::with_name("datetime_format")
+            .value_name("DATE_AND_TIME_FORMAT")
+            .long("datetime-format")
+            .help("Sets date and time format for files names")
+            .takes_value(true)
+            .default_value("%Y-%m-%d_%H-%M-%S"))
         .get_matches();
+
 //    let home_dir = env::home_dir().unwrap();
     let output_dir = PathBuf::from(
         matches.value_of("output").unwrap(),
     );
-    fs::create_dir_all(&output_dir).expect("Couldn't create output path");
-
-    let interval: u64 = matches.value_of("interval")
-        .unwrap_or("540") // 9 minutes
+    fs::create_dir_all(&output_dir)
+        .expect("Couldn't create output path");
+    let interval: u64 = matches.value_of("interval").unwrap()
         .parse().unwrap();
+    let dt_format = matches.value_of("datetime_format").unwrap()
+        .to_string();
 
     println!("Running screenshots-maker v1.0.0");
     println!("- Output directory: {}", output_dir.display());
@@ -43,11 +52,12 @@ fn main() {
     } else {
         println!("- Interval: {} seconds", interval);
     }
+    println!("- Date format for file name: {}", &dt_format);
 
     println!("Screenshots taking");
     let mk = Maker::with_path_generator(move || {
         let file_name = chrono::Local::now()
-            .format("%Y-%m-%d_%H-%M-%S")
+            .format(&dt_format)
             .to_string();
         output_dir.join(file_name)
     });
@@ -58,6 +68,6 @@ fn main() {
         let path = mk.take();
         i += 1;
         println!("#{} saved to {}", i, path.display());
-        thread::sleep(Duration::new(interval, 0))
+        thread::sleep(Duration::new(interval, 0));
     }
 }
