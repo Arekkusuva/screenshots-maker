@@ -54,6 +54,7 @@ fn main() {
     });
 
     let mut i: u64 = 0;
+    // TODO: Improve accuracy
     loop {
         let path = mk.take();
         i += 1;
