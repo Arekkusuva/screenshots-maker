@@ -4,21 +4,28 @@ mod maker;
 use maker::Maker;
 
 use std::thread;
+use std::fs;
 use std::time::Duration;
 use std::path::PathBuf;
-use std::fs;
+
+static DEFAULT_PATH: &'static str = "$HOME/Screenshots";
+
+#[inline]
+fn get_default_path() -> PathBuf {
+    dirs::home_dir().unwrap().join("Screenshots")
+}
 
 fn main() {
     let matches = App::new("screenshots-maker")
         .version("1.0.0")
-        .about("Takes periodic screenshots")
+        .about("Takes screenshots at regular intervals")
         .arg(Arg::with_name("output")
             .value_name("OUTPUT_DIRECTORY")
             .short("o")
             .long("output")
             .help("Sets path to output directory")
             .takes_value(true)
-            .required(true))
+            .default_value(DEFAULT_PATH))
         .arg(Arg::with_name("interval")
             .value_name("SECONDS")
             .short("i")
@@ -34,10 +41,10 @@ fn main() {
             .default_value("%Y-%m-%d_%H-%M-%S"))
         .get_matches();
 
-//    let home_dir = env::home_dir().unwrap();
-    let output_dir = PathBuf::from(
-        matches.value_of("output").unwrap(),
-    );
+    let output_dir = match matches.value_of("output") {
+        Some(r ) => if r == DEFAULT_PATH { get_default_path() } else { PathBuf::from(r) },
+        None => get_default_path(),
+    };
     fs::create_dir_all(&output_dir)
         .expect("Couldn't create output path");
     let interval: u64 = matches.value_of("interval").unwrap()
