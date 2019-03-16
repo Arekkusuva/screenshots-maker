@@ -1,4 +1,3 @@
-use chrono::prelude::*;
 use clap::{App, Arg};
 
 mod maker;
@@ -47,7 +46,7 @@ fn main() {
 
     println!("Screenshots taking");
     let mk = Maker::with_path_generator(move || {
-        let file_name = Utc::now()
+        let file_name = chrono::Local::now()
             .format("%Y-%m-%d_%H-%M-%S")
             .to_string();
         output_dir.join(file_name)
